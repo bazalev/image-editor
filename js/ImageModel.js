@@ -13,7 +13,12 @@ function ImageModel(imgW, imgH, accomodate) {
 ImageModel.prototype._accomodate = function() {
     var wScale = this.guide.w / this.image.w;
     var hScale = this.guide.h / this.image.h;
+
     this.scaleFactor = Math.max(wScale, hScale);
+
+    // чтобы показать пользователю что картинку можно скейлить, сделаем ее чуть больше guide-рамки
+    var overlapScale = 1.2;
+    this.scaleFactor *= overlapScale;
 };
 ImageModel.prototype._unscale = function(point) {
     return {
