@@ -23,65 +23,68 @@ function updateCanvas(image, model, canvas) {
 }
 
 function updateView(model, guideImages, canvas) {
+    if (!guideImages.length) {
+        guideImages = [guideImages];
+    }
 
+    Array.from(guideImages, function(image) {
+        updateImage(image, model);
+    });
+
+    updateCanvas(guideImages[0], model, canvas);
+}
+
+function getGlobalMidpoint(guideFrame) {
+    //TODO: HTML-specific code with magic constants (frame border width = 5px, frame width = 190 and frame height = 244)
+    var guideRect = guideFrame.getBoundingClientRect();
+    var globalMidpointX = window.pageXOffset + guideRect.left + 5 + 190 / 2;
+    var globalMidpointY = window.pageYOffset + guideRect.top + 5 + 244 / 2;
+
+    return { x: globalMidpointX, y: globalMidpointY };
 }
 
 
 
 var guideFrame = document.getElementById('guide_frame');
-var guideImg = document.getElementById('guide_img');
-var canvas = document.getElementById('canvas');
+var guideImages = [document.getElementById('guide_inner'), document.getElementById('guide_outer')];
+var canvas     = document.getElementById('canvas');
 
-//TODO: HTML-specific code with magic constants (frame border width = 5px, frame width = 190 and frame height = 244)
-var guideRect = guideFrame.getBoundingClientRect();
-var globalMidpointX = window.pageXOffset + guideRect.left + 5 + 190 / 2;
-var globalMidpointY = window.pageYOffset + guideRect.top + 5 + 244 / 2;
+guideImages[0].onload = function () {
+    var model = new ImageModel(guideImages[0].width, guideImages[0].height, { accommodate: true });
+    updateView(model, guideImages, canvas);
 
-
-guideImg.onload = function () {
-    window.model = new ImageModel(guideImg.width, guideImg.height, true);
-
-    // perform guide view
-    updateImage(guideImg, model);
-
-    // perform source view
-    updateCanvas(guideImg, model, canvas);
-
-    var moveImg = new DnD(guideImg, {
-        drag: function(from, to) {
-            model.move(from, to);
-
-            // perform guide view
-            updateImage(guideImg, model);
-
-            // perform source view
-            updateCanvas(guideImg, model, canvas);
-        }
+    Array.from(guideImages, function(img) {
+        return new DnD(img, {
+            drag: function(from, to) {
+                model.move(from, to);
+                updateView(model, guideImages, canvas);
+            }
+        });
     });
 
-    var rotateImg = new DnD(guideImg, {
-        modifier: 'alt',
-        drag: function(from, to) {
-            model.rotate(from, to, { x: globalMidpointX, y: globalMidpointY });
-
-            // perform guide view
-            updateImage(guideImg, model);
-
-            // perform source view
-            updateCanvas(guideImg, model, canvas);
-        }
+    Array.from(guideImages, function(img) {
+        return new DnD(img, {
+            modifier: 'alt',
+            dragstart: function() {
+                this._around = getGlobalMidpoint(guideFrame);
+            },
+            drag: function(from, to) {
+                model.rotate(from, to, this._around);
+                updateView(model, guideImages, canvas);
+            }
+        });
     });
 
-    var scaleImg = new DnD(guideImg, {
-        modifier: 'shift',
-        drag: function(from, to) {
-            model.scale(from, to, { x: globalMidpointX, y: globalMidpointY });
-
-            // perform guide view
-            updateImage(guideImg, model);
-
-            // perform source view
-            updateCanvas(guideImg, model, canvas);
-        }
+    Array.from(guideImages, function(img) {
+        return new DnD(img, {
+            modifier: 'shift',
+            dragstart: function() {
+                this._around = getGlobalMidpoint(guideFrame);
+            },
+            drag: function(from, to) {
+                model.scale(from, to, this._around);
+                updateView(model, guideImages, canvas);
+            }
+        });
     });
 };

@@ -1,4 +1,4 @@
-function ImageModel(imgW, imgH, accomodate) {
+function ImageModel(imgW, imgH, settings) {
     this.guide = { w: 190,  h: 244  }; /* направляющая рамка, менять можно, но только при инициализации, дальше неизменно */
     this.image = { w: imgW, h: imgH }; /* после загрузки картинки эти значения больше не меняются, хотя ничего страшного не произойдет если поменять */
     this.scaleFactor = 1;
@@ -6,11 +6,11 @@ function ImageModel(imgW, imgH, accomodate) {
     this.angle = 0;
     this.midpoint = { x: this.image.w / 2, y: this.image.h / 2 };
 
-    if (accomodate) {
-        this._accomodate();
+    if (settings.accommodate) {
+        this._accommodate();
     }
 }
-ImageModel.prototype._accomodate = function() {
+ImageModel.prototype._accommodate = function() {
     var wScale = this.guide.w / this.image.w;
     var hScale = this.guide.h / this.image.h;
 

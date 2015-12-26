@@ -1,9 +1,9 @@
 body {
     padding: 10px;
-    background: #000;
+    /*background: #000;*/
 }
 .guide {
-    margin: 100px auto;
+    margin: 150px auto 250px;
     width: 190px;
     height: 244px;
     position: relative;
@@ -16,11 +16,16 @@ body {
     margin: -5px;
     position: absolute;
     z-index: 1;
+    overflow: hidden;
 }
-#guide_img {
+#guide_inner,
+#guide_outer {
     position: absolute;
     left: 0;
     top: 0;
+}
+#guide_outer {
+    opacity: 0.3;
 }
 canvas {
     position: relative;
