@@ -50,13 +50,19 @@ var guideImages = [document.getElementById('guide_inner'), document.getElementBy
 var canvas     = document.getElementById('canvas');
 
 guideImages[0].onload = function () {
-    var model = new ImageModel(guideImages[0].width, guideImages[0].height, { accommodate: true });
+    var imgW = guideImages[0].width;
+    var imgH = guideImages[0].height;
+    var model = new ImageModel(imgW, imgH, { fitIn: true });
     updateView(model, guideImages, canvas);
 
     Array.from(guideImages, function(img) {
         return new DnD(img, {
             drag: function(from, to) {
                 model.move(from, to);
+                updateView(model, guideImages, canvas);
+            },
+            dragend: function() {
+                model.align();
                 updateView(model, guideImages, canvas);
             }
         });
@@ -71,6 +77,10 @@ guideImages[0].onload = function () {
             drag: function(from, to) {
                 model.rotate(from, to, this._around);
                 updateView(model, guideImages, canvas);
+            },
+            dragend: function() {
+                model.align();
+                updateView(model, guideImages, canvas);
             }
         });
     });
@@ -83,6 +93,10 @@ guideImages[0].onload = function () {
             },
             drag: function(from, to) {
                 model.scale(from, to, this._around);
+                updateView(model, guideImages, canvas);
+            },
+            dragend: function() {
+                model.align();
                 updateView(model, guideImages, canvas);
             }
         });
