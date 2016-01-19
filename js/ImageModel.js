@@ -127,7 +127,7 @@ ImageModel.prototype._rotatePoint = function(point, angle) {
 };
 
 /**
- * Move and (maybe) scale image to avoid blank areas
+ * Move and maybe scale image to avoid blank areas (angle of rotation remains unchanged)
  */
 ImageModel.prototype.align = function() {
     // TODO: По-хорошему, чтобы избавиться от непонятного кода, который идет далее, пора уже выделять новые классы,
@@ -155,8 +155,8 @@ ImageModel.prototype.align = function() {
     }.bind(this));
 
     // теперь находим 4-х угольный guideBoundingBox стороны которого должны быть параллельны сторонам картинки
-    var xSorted = Array.from(guideVertexes).sort(function(a, b) { return a.x - b.x });
-    var ySorted = Array.from(guideVertexes).sort(function(a, b) { return a.y - b.y });
+    var xSorted = guideVertexes.slice().sort(function(a, b) { return a.x - b.x });
+    var ySorted = guideVertexes.slice().sort(function(a, b) { return a.y - b.y });
     var guideBoundingBox = {
         //topLeft: { x: xSorted[0].x, y: ySorted[0].y },
         //bottomRight: { x: xSorted[3].x, y: ySorted[3].y },

@@ -47,58 +47,58 @@ function getGlobalMidpoint(guideFrame) {
 
 var guideFrame = document.getElementById('guide_frame');
 var guideImages = [document.getElementById('guide_inner'), document.getElementById('guide_outer')];
+// чтобы не навешивать обработчики на каждую картинку, нужен пустой <div>, который будет повторять движения картинок
+// а для touch-устройст это вообще единственный способ, чтобы работало как надо
+var handle = document.getElementById('handler');
+guideImages.push(handle);
 var canvas     = document.getElementById('canvas');
 
 guideImages[0].onload = function () {
     var imgW = guideImages[0].width;
     var imgH = guideImages[0].height;
+    handle.style.width = imgW + 'px';
+    handle.style.height = imgH + 'px';
     var model = new ImageModel(imgW, imgH, { fitIn: true });
     updateView(model, guideImages, canvas);
 
-    Array.from(guideImages, function(img) {
-        return new DnD(img, {
-            drag: function(from, to) {
-                model.move(from, to);
-                updateView(model, guideImages, canvas);
-            },
-            dragend: function() {
-                model.align();
-                updateView(model, guideImages, canvas);
-            }
-        });
+    var moveHandle = new DnD(handle, {
+        drag: function(from, to) {
+            model.move(from, to);
+            updateView(model, guideImages, canvas);
+        },
+        dragend: function() {
+            model.align();
+            updateView(model, guideImages, canvas);
+        }
     });
 
-    Array.from(guideImages, function(img) {
-        return new DnD(img, {
-            modifier: 'alt',
-            dragstart: function() {
-                this._around = getGlobalMidpoint(guideFrame);
-            },
-            drag: function(from, to) {
-                model.rotate(from, to, this._around);
-                updateView(model, guideImages, canvas);
-            },
-            dragend: function() {
-                model.align();
-                updateView(model, guideImages, canvas);
-            }
-        });
+    var rotateHandle = new DnD(handle, {
+        modifier: 'alt',
+        dragstart: function() {
+            this._around = getGlobalMidpoint(guideFrame);
+        },
+        drag: function(from, to) {
+            model.rotate(from, to, this._around);
+            updateView(model, guideImages, canvas);
+        },
+        dragend: function() {
+            model.align();
+            updateView(model, guideImages, canvas);
+        }
     });
 
-    Array.from(guideImages, function(img) {
-        return new DnD(img, {
-            modifier: 'shift',
-            dragstart: function() {
-                this._around = getGlobalMidpoint(guideFrame);
-            },
-            drag: function(from, to) {
-                model.scale(from, to, this._around);
-                updateView(model, guideImages, canvas);
-            },
-            dragend: function() {
-                model.align();
-                updateView(model, guideImages, canvas);
-            }
-        });
+    var scaleHandle = new DnD(handle, {
+        modifier: 'shift',
+        dragstart: function() {
+            this._around = getGlobalMidpoint(guideFrame);
+        },
+        drag: function(from, to) {
+            model.scale(from, to, this._around);
+            updateView(model, guideImages, canvas);
+        },
+        dragend: function() {
+            model.align();
+            updateView(model, guideImages, canvas);
+        }
     });
 };

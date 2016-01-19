@@ -19,13 +19,17 @@ body {
     overflow: hidden;
 }
 #guide_inner,
-#guide_outer {
+#guide_outer,
+#handler {
     position: absolute;
     left: 0;
     top: 0;
 }
 #guide_outer {
     opacity: 0.3;
+}
+#handler {
+    z-index: 2;
 }
 canvas {
     position: relative;
