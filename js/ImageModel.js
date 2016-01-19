@@ -73,7 +73,7 @@ ImageModel.prototype.rotate = function(from, to, around) {
     var absA = Math.sqrt(A.x * A.x + A.y * A.y);
     var absB = Math.sqrt(B.x * B.x + B.y * B.y);
     // откуда и найдем угол между ними
-    var deltaAngle = Math.acos(dotProduct / (absA * absB));
+    var deltaAngle = Math.acos(Math.min(dotProduct / (absA * absB), 1)); // иногда из-за ошибок вещественной арифметики косинус получается чуть больше 1, а следоватлеьно Math.acos вернет NaN
 
     // чтобы найти знак deltaAngle, посчитаем векторное произведение - определитель матрицы, столбцы которой построены
     // из координат соответсвенно вектора, от которого поворачиваемся, и вектора, к которому поворачиваемся,

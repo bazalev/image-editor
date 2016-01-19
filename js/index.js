@@ -101,4 +101,60 @@ guideImages[0].onload = function () {
             updateView(model, guideImages, canvas);
         }
     });
+
+
+
+
+    function moveCallback(begin, end) {
+        var beginCenter = {x: (begin[0].x + begin[1].x)/2, y: (begin[0].y + begin[1].y)/2};
+        var endCenter = {x: (end[0].x + end[1].x)/2, y: (end[0].y + end[1].y)/2};
+        var shift = {x: endCenter.x - beginCenter.x, y: endCenter.y - beginCenter.y};
+        var from = {x: begin[0].x + shift.x, y: begin[0].y + shift.y};
+        var to = {x: end[0].x, y: end[0].y};
+        var around = {x: endCenter.x, y: endCenter.y};
+
+        model.move({x: 0, y: 0}, shift);
+        model.rotate(from, to, around);
+        model.scale(from, to, around);
+        updateView(model, guideImages, canvas);
+    }
+
+    var prevTouches = [];
+    function handleStart(event) {
+        if (event.target !== handle) return;
+        if (event.touches.length !== 2) return;
+        event.preventDefault();
+
+        var touches = [
+            {id: event.touches[0].identifier, x: event.touches[0].pageX, y: event.touches[0].pageY},
+            {id: event.touches[1].identifier, x: event.touches[1].pageX, y: event.touches[1].pageY}
+        ];
+        prevTouches = touches.slice();
+
+        document.addEventListener('touchmove', handleMove);
+        document.addEventListener('touchend', handleEnd);
+    }
+    function handleMove(event) {
+        if (event.touches.length !== 2) return;
+        event.preventDefault();
+
+        var touches = [
+            {id: event.touches[0].identifier, x: event.touches[0].pageX, y: event.touches[0].pageY},
+            {id: event.touches[1].identifier, x: event.touches[1].pageX, y: event.touches[1].pageY}
+        ];
+
+        moveCallback(prevTouches, touches);
+
+        prevTouches = touches.slice();
+    }
+
+    function handleEnd(event) {
+        event.preventDefault();
+
+        document.removeEventListener('touchmove', handleMove);
+        document.removeEventListener('touchend', handleEnd);
+
+        // callback
+    }
+    document.addEventListener('touchstart', handleStart);
 };
