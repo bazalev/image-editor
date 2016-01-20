@@ -5,8 +5,10 @@
  * @param {number} imgH - real (not scaled) image height.
  * @param {object} settings - model settings
  * @param {boolean} settings.fitIn - change scale and position to fit image in guide frame (if true, performs once at init time)
+ * @param {boolean} settings.angleStep - see ImageModel.prototype.align()
  */
 function ImageModel(imgW, imgH, settings) {
+    this.settings = settings;
     this.guide = { w: 190,  h: 244  }; /* направляющая рамка, менять можно, но только при инициализации, дальше неизменно */
     this.image = { w: imgW, h: imgH }; /* после загрузки картинки эти значения больше не меняются, хотя ничего страшного не произойдет если поменять */
     this.scaleFactor = 1;
@@ -14,7 +16,7 @@ function ImageModel(imgW, imgH, settings) {
     this.angle = 0;
     this.midpoint = { x: this.image.w / 2, y: this.image.h / 2 };
 
-    if (settings.fitIn) {
+    if (this.settings.fitIn) {
         this._fitIn();
     }
 }
@@ -128,8 +130,15 @@ ImageModel.prototype._rotatePoint = function(point, angle) {
 
 /**
  * Move and maybe scale image to avoid blank areas (angle of rotation remains unchanged)
+ * @param {object} options -
+ * @param {boolean} options.useAngleStep - rotate to the nearest angle divisible by this.settings.angleStep
  */
-ImageModel.prototype.align = function() {
+ImageModel.prototype.align = function(options) {
+
+    if (options.useAngleStep) {
+        this.angle = Math.round(this.angle / this.settings.angleStep) * this.settings.angleStep;
+    }
+
     // TODO: По-хорошему, чтобы избавиться от непонятного кода, который идет далее, пора уже выделять новые классы,
     // TODO: типа Point(x: number, y: number), Vector(begin: Point, end: Point) и Rect(v1: Point, v2: Point, v3: Point, v4: Point)
     // TODO: с методами Point.prototype.rotate(angle), Vector.prototype.rotate(angle) и Rect.prototype.rotate(angle).

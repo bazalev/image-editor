@@ -58,7 +58,10 @@ guideImages[0].onload = function () {
     var imgH = guideImages[0].height;
     handle.style.width = imgW + 'px';
     handle.style.height = imgH + 'px';
-    var model = new ImageModel(imgW, imgH, { fitIn: true });
+    var model = new ImageModel(imgW, imgH, {
+        fitIn: true,
+        angleStep: Math.PI / 2
+    });
     updateView(model, guideImages, canvas);
 
     var moveHandle = new DnD(handle, {
@@ -118,6 +121,10 @@ guideImages[0].onload = function () {
         model.scale(from, to, around);
         updateView(model, guideImages, canvas);
     }
+    function endCallback() {
+        model.align({ useAngleStep: true });
+        updateView(model, guideImages, canvas);
+    }
 
     var prevTouches = [];
     function handleStart(event) {
@@ -154,7 +161,7 @@ guideImages[0].onload = function () {
         document.removeEventListener('touchmove', handleMove);
         document.removeEventListener('touchend', handleEnd);
 
-        // callback
+        endCallback();
     }
     document.addEventListener('touchstart', handleStart);
 };
