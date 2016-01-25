@@ -135,7 +135,7 @@ ImageModel.prototype._rotatePoint = function(point, angle) {
  */
 ImageModel.prototype.align = function(options) {
 
-    if (options.useAngleStep) {
+    if (options && options.useAngleStep) {
         this.angle = Math.round(this.angle / this.settings.angleStep) * this.settings.angleStep;
     }
 
